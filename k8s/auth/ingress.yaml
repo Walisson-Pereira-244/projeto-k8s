@@ -1,0 +1,23 @@
+# Ingress = porta de entrada: liga o endereço http://auth.local ao Service auth-service.
+# Acesso direto (Swagger do auth).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: auth-service-ingress
+  namespace: ecommerce
+  labels:
+    app: auth-service
+    part-of: ecommerce
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: auth.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 8000

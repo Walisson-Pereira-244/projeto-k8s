@@ -1,0 +1,13 @@
+# ConfigMap = configurações NÃO sensíveis, lidas como variáveis de ambiente.
+# Algoritmo e tempo de validade do token JWT.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-service-config
+  namespace: ecommerce
+  labels:
+    app: auth-service
+    part-of: ecommerce
+data:
+  JWT_ALGORITHM: "HS256"
+  JWT_EXPIRATION_MINUTES: "60"

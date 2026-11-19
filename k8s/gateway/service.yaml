@@ -1,0 +1,18 @@
+# Service = endereço fixo dentro do cluster (http://api-gateway:8080)
+# que reparte as chamadas entre as réplicas.
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: ecommerce
+  labels:
+    app: api-gateway
+    part-of: ecommerce
+spec:
+  type: ClusterIP
+  selector:
+    app: api-gateway
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

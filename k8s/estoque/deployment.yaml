@@ -1,0 +1,67 @@
+# Deployment = "quero 2 cópias (réplicas) deste serviço sempre no ar".
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: estoque-service
+  namespace: ecommerce
+  labels:
+    app: estoque-service
+    part-of: ecommerce
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: estoque-service
+  template:
+    metadata:
+      labels:
+        app: estoque-service
+        part-of: ecommerce
+      annotations:
+        # O Prometheus descobre os pods por estas anotações.
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Espera o banco aceitar conexões antes de iniciar a aplicação.
+      initContainers:
+        - name: aguardar-banco
+          image: postgres:14
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - "until pg_isready -h estoque-db -p 5432; do echo aguardando estoque-db...; sleep 2; done"
+
+      containers:
+        - name: estoque-service
+          image: estoque-service:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: estoque-service-config
+            - secretRef:
+                name: estoque-service-secret
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

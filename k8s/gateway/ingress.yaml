@@ -1,0 +1,23 @@
+# Ingress = porta de entrada: liga o endereço http://gateway.local ao Service api-gateway.
+# Porta de entrada OFICIAL da aplicação (login + rotas protegidas).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-gateway-ingress
+  namespace: ecommerce
+  labels:
+    app: api-gateway
+    part-of: ecommerce
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: gateway.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080

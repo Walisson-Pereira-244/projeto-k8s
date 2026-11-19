@@ -1,0 +1,12 @@
+# ConfigMap = configurações NÃO sensíveis, lidas como variáveis de ambiente.
+# ENABLE_DOCS=true liga o Swagger (/docs) do estoque.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: estoque-service-config
+  namespace: ecommerce
+  labels:
+    app: estoque-service
+    part-of: ecommerce
+data:
+  ENABLE_DOCS: "true"

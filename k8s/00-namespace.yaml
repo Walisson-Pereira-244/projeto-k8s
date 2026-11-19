@@ -1,0 +1,7 @@
+# Namespace = uma "pasta" do cluster onde ficam todos os recursos do projeto.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ecommerce
+  labels:
+    part-of: ecommerce

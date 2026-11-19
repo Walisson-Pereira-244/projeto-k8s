@@ -1,0 +1,14 @@
+# ConfigMap = configurações NÃO sensíveis, lidas como variáveis de ambiente.
+# O gateway encontra os outros serviços pelos NOMES dos Services.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-config
+  namespace: ecommerce
+  labels:
+    app: api-gateway
+    part-of: ecommerce
+data:
+  AUTH_SERVICE_URL: "http://auth-service:8000"
+  PEDIDO_SERVICE_URL: "http://pedido-service:8000"
+  ESTOQUE_SERVICE_URL: "http://estoque-service:8000"

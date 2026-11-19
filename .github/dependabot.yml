@@ -1,0 +1,47 @@
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/estoque-service"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: "/pedido-service"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: "/auth-service"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: "/api-gateway"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: "/estoque-service"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: "/pedido-service"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: "/auth-service"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: "/api-gateway"
+    target-branch: develop
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: develop
+    schedule:
+      interval: weekly

@@ -1,0 +1,23 @@
+# Ingress = porta de entrada: liga o endereço http://grafana.local ao Service grafana.
+# Dashboards (usuário e senha no Secret grafana-secret).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: ecommerce
+  labels:
+    app: grafana
+    part-of: ecommerce
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: grafana.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana
+                port:
+                  number: 3000

@@ -1,0 +1,23 @@
+# Ingress = porta de entrada: liga o endereço http://estoque.local ao Service estoque-service.
+# Acesso direto (Swagger do estoque). O caminho oficial é pelo api-gateway.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: estoque-service-ingress
+  namespace: ecommerce
+  labels:
+    app: estoque-service
+    part-of: ecommerce
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: estoque.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: estoque-service
+                port:
+                  number: 8000

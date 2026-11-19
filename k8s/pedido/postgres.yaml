@@ -1,0 +1,110 @@
+# Banco de dados PostgreSQL do serviço (1 réplica: banco não se replica assim).
+# Os dados ficam num volume (PVC), então sobrevivem à recriação do pod.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pedido-db-pvc
+  namespace: ecommerce
+  labels:
+    app: pedido-db
+    part-of: ecommerce
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pedido-db
+  namespace: ecommerce
+  labels:
+    app: pedido-db
+    part-of: ecommerce
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: pedido-db
+  template:
+    metadata:
+      labels:
+        app: pedido-db
+        part-of: ecommerce
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:14
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pedido-service-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pedido-service-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: pedido-service-secret
+                  key: POSTGRES_DB
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: dados
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: dados
+          persistentVolumeClaim:
+            claimName: pedido-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pedido-db
+  namespace: ecommerce
+  labels:
+    app: pedido-db
+    part-of: ecommerce
+spec:
+  type: ClusterIP
+  selector:
+    app: pedido-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432

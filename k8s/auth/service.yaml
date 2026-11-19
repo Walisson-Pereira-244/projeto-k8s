@@ -1,0 +1,18 @@
+# Service = endereço fixo dentro do cluster (http://auth-service:8000)
+# que reparte as chamadas entre as réplicas.
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: ecommerce
+  labels:
+    app: auth-service
+    part-of: ecommerce
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-service
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
