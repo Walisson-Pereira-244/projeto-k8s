@@ -24,7 +24,7 @@ jobs:
       run:
         working-directory: ${{ matrix.servico }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: actions/setup-python@v5
         with:
@@ -52,7 +52,7 @@ jobs:
       matrix:
         servico: [api-gateway, auth-service, estoque-service, pedido-service]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build (sem publicar)
         run: docker build -t ${{ matrix.servico }}:ci ./${{ matrix.servico }}
 
@@ -60,7 +60,7 @@ jobs:
     name: Validar manifests do Kubernetes
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Instalar kubeconform
         run: |
           curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz | tar xz
